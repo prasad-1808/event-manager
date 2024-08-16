@@ -1,14 +1,27 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('submitted',mobileNumber,password)
-  }
+    try {
+      const response = await axios.post("http://localhost:5000/login", {
+        mobile,
+        password,
+      });
+      if (response.status === 200) {
+        setIsLoggedIn(true);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error logging in:", error.response.data);
+    }
+  };
 
   return (
     <div className="container">
@@ -17,18 +30,19 @@ const Login = () => {
           <div className="card">
             <div className="card-body">
               <h3 className="card-title text-center mb-4">Login</h3>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="username" className="form-label">
-                    Mobile Number
+                  <label htmlFor="mobile" className="form-label">
+                    Mobile
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    id="mobilenumber"
+                    id="mobile"
                     placeholder="Enter mobile number"
-                    value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -42,13 +56,10 @@ const Login = () => {
                     placeholder="Enter password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100"
-                  onClick={handleSubmit}
-                >
+                <button type="submit" className="btn btn-primary w-100">
                   Login
                 </button>
               </form>

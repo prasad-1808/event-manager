@@ -1,30 +1,31 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Password and Confirm Password validation
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      alert("Passwords do not match");
       return;
     }
 
-    console.log("Form submitted:", {
-      username,
-      mobileNumber,
-      eventDate,
-      password,
-    });
-    // Perform further form submission logic here
+    try {
+      const response = await axios.post("http://localhost:5000/register", {
+        username,
+        mobile,
+        email,
+        password,
+      });
+      console.log("User registered:", response.data);
+    } catch (error) {
+      console.error("Error registering user:", error.response.data);
+    }
   };
 
   return (
@@ -50,29 +51,30 @@ const Register = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="mobileNumber" className="form-label">
-                    Mobile Number
+                  <label htmlFor="mobile" className="form-label">
+                    Mobile
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    id="mobileNumber"
+                    id="mobile"
                     placeholder="Enter mobile number"
-                    value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
                     required
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="eventDate" className="form-label">
-                    Event Date
+                  <label htmlFor="email" className="form-label">
+                    Email
                   </label>
                   <input
-                    type="date"
+                    type="email"
                     className="form-control"
-                    id="eventDate"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    id="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -112,7 +114,6 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };
